@@ -320,5 +320,46 @@ $httpProvider.interceptors.push( function ($injector) {
 ```
 
 
+## Transclusion
+* Create components with customizable contents
+* The magic behind ``ng-repeat``
+* Examples of Transclusion Usages:
+    * News Feed
+    * Tabs
+    * Modal
 
+### Multiple Transclusion
+*Prior to **Angular 1.5**, a component could only transcluyde a single entry. Whatever you gave it had to be used as a whole, but in **1.5** Angular introduced **multiple slot transclusion**.*
+* Introduced in Angular 1.5
+* Allows specifies multiple slots in the same component
 
+Example: Generic Modal Component
+* Allows customizing both header and body
+* Usage:
+```
+<modal>
+	<modal-title>Reset {{ $ctrl.name }}?</modal-title> // <- <modal-title> transclusion
+	<modal-body>  // <- <modal-body> transclusion
+		You can only do this {{ $ctrl.times }} times
+	</modal-body>
+</modal>
+```
+* The modal title and modal body elements are the transclusion slots
+* The modal title and modal body elements supply the transcultion slots
+* Their content will be injected
+```
+app.component( ‘modal’, {
+	template: [
+		‘<dv ng-transclude=“title”></div>,
+		‘<div ng-transclude=“body”></div>
+	].join(‘’),
+	transclude: {
+		title: ‘modalTitle’,
+		body: ‘modalBody’
+	},
+	controller: function() {
+		// Stuff to make this component render as a modal
+	}
+});
+```
+* Fortunately enough, transclusion automatically takes care of things like passing the scopes correctly so that even though the templates pass reference the original component scope, for example the control property, it’s still properly visible inside.
