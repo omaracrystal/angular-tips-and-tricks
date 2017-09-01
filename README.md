@@ -10,10 +10,11 @@ https://www.lynda.com/Angular-tutorials/One-time-binding/597030/611899-4.html
 * In Angular 1.x you write 
     * ``ng-repeat=“task in $ctrl.tasks”``
     * might be expensive (loading longer times if the list or long or each element template is complex
-    * attached $$haskKey property
+    * attached ``$$haskKey`` property
 * In Angular 2+ you can now write
-    * <div ng-repeat=“task in $ctrl.tasks track by task.id”>
-    * Used instead of $$haskKey
+    * ``<div ng-repeat=“task in $ctrl.tasks track by task.id”>``
+    * Used instead of ``$$haskKey``
+    * This only loads specific items and not the entire list of items
 
 ### Too many watchers slow down apps
 * Biggest source is template bindings ```{{ $ctrl.value }}```
@@ -23,7 +24,7 @@ https://www.lynda.com/Angular-tutorials/One-time-binding/597030/611899-4.html
     * If the items details aren’t important to be updated all the time this item is consider static. 
 * CHANGE
     * ``{{ item.name }}`` < not static (costly)
-    * ```{{ ::item.name }}`` < one-time bindings
+    * ``{{ ::item.name }}`` < one-time bindings
 
 ## ng-include vs component
 * ``ng-include`` 50-60% slower than component (just loading time) 
@@ -36,7 +37,7 @@ https://www.lynda.com/Angular-tutorials/One-time-binding/597030/611899-4.html
 ## Perform Action on User Typing
 
 ### $scope.watch vs ng-change 
-**(try to use ng-change in most cases)**
+**(try to use ``ng-change`` in most cases)**
 ```
 <input type=“text” ng-model=“$ctrl.show.name”>
 
@@ -66,10 +67,8 @@ https://www.lynda.com/Angular-tutorials/One-time-binding/597030/611899-4.html
 * Can be an expression, not just function call
 * Angular Saves expression for later
 * (directive)
+
 ```
-<toggle callback="$ctrl.myCallback()"></toggle>
-
-
 angular.module('app').component('toggle', {
     templateUrl: '...',
     bindings: {
@@ -80,6 +79,11 @@ angular.module('app').component('toggle', {
         this.callback();
     }
 });
+```
+
+```
+<toggle callback="$ctrl.myCallback()"></toggle>
+
 ```
 
 * often time people get confused when they have to pass a parameter to the function. Simply trying to invoke it as a regular function doesn’t work, since Angular reads everything as strings / objects first. Remember you are not really calling a function; you are evaluating an expression and supplying it with values
