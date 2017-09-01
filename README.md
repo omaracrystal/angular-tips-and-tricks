@@ -190,3 +190,71 @@ angular.equals( { a: 1 }, { a: 1, b: function() {} }) === true
     * toJson() is safer in Angular apps
     * Used automatically by $http
     * ``angular.fromJson()`` equivalent to ``JSON.parse()``
+    
+    
+
+## Create promises without $q.defer()
+**Almost never needed**
+
+**BAD**
+```
+var defer;
+defer = $q.defer();
+defer.resolve( [ ‘detail’, ‘simple’ ] );
+return defer.promise;
+```
+**GOOD**
+```
+return $q.when( [ ‘detail’, ‘simple’ ] );
+
+return $q.reject( { error: ‘something bad’ } );
+```
+**BAD**
+```
+var defer = $q.defer();
+$http.get( ‘options.json ’).then( function (response) {
+	defer.resolve(response.data);
+});
+return defer.promise;
+```
+**GOOD**
+```
+return $http.get( ‘options.json’ ).then( function(response) {
+	return response.data;
+});
+```
+### Promise Chaining
+```
+return promiseA().then( function(a) {
+	return promiseB(a);
+}).then( function(b) {
+	return promiseC(b);
+}).then( function(c) {
+	return promiseD(c);
+});
+
+```
+**Useless Wrapping: BAD**
+```
+var defer = $q.defer();
+$timeout(function() {
+	defer.resolve();
+}, 5000);
+return defer,promise
+```
+### So, When is $q.defer() GOOD?
+* When integrating with non-angular libraries that use callbacks
+* So, when should you use defer? Basically the main reason is: You’re converting a callback API to be a promise-based. This usually means you’re wrapping some front-party library, like a jQuery plugin, to work with Angular. Callbacks are not as fun as promises, and break the API Angular expects to work with. To kickstart the promise chain and covert callbacks you have the create the first promise yourself.
+* This is exactly what defer should be used for. In most other scenarios, leave it be. 
+
+**GOOD**
+```
+var deferred = $q.defer();
+jQueryPlugin.initialize( function callback( result ) {
+	defered.resolve( result );
+});
+return deferred.promise;
+```
+
+
+
