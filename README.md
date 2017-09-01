@@ -161,3 +161,32 @@ angular.module(‘app’).service(‘SomeService’, function() {
 * ES5 should use factories
 * ES6 should use services
 
+
+
+
+## Angular: Special Functions
+
+### angular.equals() and _.isEqual() ?
+* Angular implemented angular.equalsso that it ignores properties that start with the $ dollar sign.
+
+```
+angular.equals( { a: 1 }, { a: 1 } === true
+angular.equals( { a: 1 }, { a: 1, $a: 2 } === true
+
+angular.equals( { a: 1 }, { a: 1, b: function() {} }) === true
+```
+
+
+### angular.toJson() and JSON.stringify() ?
+### angular.fromJson() and JSON.parse()
+
+* Angular prefixes its own APIs with “$”
+    * Examples
+        * `` ng-resource: `$save` ``
+        * `` $scope: `$apply` ``
+* ``angular.toJson()``
+    * Ignores properties that start with “$$”
+    * “$$” means private and internal Angular API (such as $$hashKey in ng-repeat elements)
+    * toJson() is safer in Angular apps
+    * Used automatically by $http
+    * ``angular.fromJson()`` equivalent to ``JSON.parse()``
