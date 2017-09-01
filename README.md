@@ -126,3 +126,38 @@ angular.module('app').component('passwordBox', {
 </password-box>
 
 ```
+
+## Services vs Factories
+* Similar use cases
+* Both create an injectable
+* Both are invoked once to create a **singleton**
+* It doesn’t matter whether SomeService is actually a service or a factory. The MyCtrl that’s using it is unaware of it. 
+
+#### **Factories** Essentially, factories are functions that return an object
+
+below is a matching factory to implement this… The definition is passing a function whose return value is used as the instance that will be injected. This will result in an injectable object called SomeService with a single public function called someFunction
+
+```
+angular.module(‘app’).factory(‘SomeService’, function() {
+	return {
+		someFunction: function() {}
+	};
+});
+```
+
+#### **Services** Are constructor functions of the object
+* And here is a matching service below. 
+* The difference, as you can see, is that the service function will be invoked once by Angular using the new keyword. This will result in the exact same injectable as below. 
+* As you can see, these are truly equivalent, and the decision of which should be used comes down to a matter of taste. 
+```
+angular.module(‘app’).service(‘SomeService’, function() {
+	this.someFunction=function() {};
+});
+```
+
+### What to use? Factory vs Services
+* Matter of taste
+* Choose one and Stick to that choice
+* ES5 should use factories
+* ES6 should use services
+
