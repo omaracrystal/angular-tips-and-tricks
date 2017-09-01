@@ -1,6 +1,7 @@
 # Angular Tips and Tricks
 https://www.lynda.com/Angular-tutorials/One-time-binding/597030/611899-4.html
 
+
 ### ng-show & ng-if 
 **(test to make sure which one is faster)**
 * ``ng-show`` loads to the DOM first but then attaches watcher to the element (which can slow down the application)
@@ -255,6 +256,69 @@ jQueryPlugin.initialize( function callback( result ) {
 });
 return deferred.promise;
 ```
+
+
+## Circular Dependencies
+A -> B -> C -> A
+* Causes Angular’s bootstrap to error
+* Usually are a code smell
+    * some examples of code smells: http://www.codelord.net/2015/09/30/angular-2-preparation-controller-code-smells/
+* May be solved by splitting services smaller
+
+### HTTP Interceptors
+* Angular’s way for handling cross-app HTTP concerns
+* Most commonly used for authentication and error handling
+* Example: Interceptor
+    * Listens for HTTP failures
+    * In case of 401 failures, calls AuthService
+    * AuthService performs logic request
+
+**Example: Interceptor**
+```
+$httpProvider.interceptors.push(function(AuthService) {
+	return {
+		response: function( response ) {
+			//Detect and handle 401 errors
+			AuthService.handleExpiredSession();
+		}
+	};
+});
+```
+**Example: AuthService**
+```
+function AuthService( $http ) {
+	return {
+		login: function( user, password ) {
+			// This uses $http to login
+		},
+		handleExpiredSession: function() {
+			// Redirect to login page
+		}
+	}
+});
+```
+**Initialization Failure because The Cycle (Circular Dependancies)**
+
+**Interceptor -> AuthService -> $http -> Intercepter**
+```
+Error: [ $injector:cep ] Circular dependency found:
+$http <- AuthService <- $http
+```
+### $injector service to the rescue! ###
+* The injector is the programmatic way to access Angular’s dependency injection at runtime
+* Using it, it is possible to manually inject AuthService inside the interceptor and break the circular dependency. 
+* Calling $injector.get() with the name of a service will return the exact same singleton instance of AuthService as you’d get when injecting it to a controller’s constructor. The main difference is that now we are performing this at a later point, after Angular has finished bootstrapping the project. At this point in time, where everything is up and running, it’s safe to inject AuthService
+```
+$httpProvider.interceptors.push( function ($injector) {
+	return {
+		response: function ( response ) {
+			// Detect and handle 401 errors
+			$injector.get( ‘AuthService’ ).hadleExpiredSession();
+		}
+	};
+});
+```
+
 
 
 
