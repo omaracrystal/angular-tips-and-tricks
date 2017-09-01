@@ -1,6 +1,29 @@
 # Angular Tips and Tricks
 https://www.lynda.com/Angular-tutorials/One-time-binding/597030/611899-4.html
 
+### Notes are on the following:
+* ng-show vs ng-if
+* ng-repeat and adding "track by"
+* watchers and ``{{ ::item.name }}`` < one-time bindings
+* ng-include vs component
+* $scope.watch vs ng-change
+* Ampersand ( ``` '&' ``` ) Binding
+    * Invoking Binding with Argument
+* Understanding @ binding
+* Services vs Factories
+* Angular: Special Functions
+    * angular.equals() and _.isEqual() ?
+    * angular.toJson() and JSON.stringify() ?
+    * angular.fromJson() and JSON.parse()
+* Create promises without $q.defer()
+    * Promise Chaining
+* Circular Dependencies
+    * Interceptor -> AuthService -> $http -> Intercepter
+    * $injector service to the rescue!
+* Transclusion
+    * Multiple Transclusion
+* Turn URLs in paragraphs to safe links
+    * linky: The Filter
 
 ### ng-show & ng-if 
 **(test to make sure which one is faster)**
@@ -363,3 +386,31 @@ app.component( ‘modal’, {
 });
 ```
 * Fortunately enough, transclusion automatically takes care of things like passing the scopes correctly so that even though the templates pass reference the original component scope, for example the control property, it’s still properly visible inside.
+
+
+## Turn URLs in paragraphs to safe links
+**Automatically Detecting Links**
+
+###linky: The Filter
+* Built-in solution by Angular
+* Safe
+* Introduced way back in 1.0
+**linky: Setting Up**
+* Add angular-sanitize.js to the project
+* Require the `ngSanitize` module
+```
+angular.module( ‘myApp’, [‘ngSanitize’] );
+```
+```
+<div ng-bind-htlm=“blog.post | linky”></div>
+```
+* Basic usage: make sure to pass the text to the links filter, and then use that with a special ng-bind-html direct instead of the regular ng-bind directive. This one allows the input to actually contain some HTML. This will take **blog.post** and display it regularly except that URLs inside it would now become real clickable links.
+* What happens is that Angular safely sanitizes all the text. The filter also supports some more advanced features. It’s possible to set the target of the links, for example to make sure they open in a new tab. 
+```
+<div ng-bind-html=“blog.post | link:’_blank’”></div>
+```
+* And even more, one can add specific attributes to links such as adding the ``{ real: ‘nofollow’ }`` attribute which is usually recommended when putting up links to user-generated content in order to let search engine bots know that the link pages should not be considered.
+    * To do that, simply pass another parameter to the filter with the attributes object. And that’s it! Link away.
+```
+<div ng-bind-html=“blog.post | link:’_blank’:{ rel: ‘nofollow’ }”></div>
+```
